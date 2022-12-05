@@ -12,4 +12,4 @@ for item in all_lines:
         all_sums.append(0)
 
 all_sums.sort(reverse=True)
-print("The first elf is carrying {0}\nThe second elf is carrying {1}\nThe third elf is carrying {2}\nOverall they are carrying {3}".format(all_sums[0], all_sums[1], all_sums[2], sum(all_sums[:3])))
+print("The first elf is carrying {0} calories\nThe second elf is carrying {1} calories\nThe third elf is carrying {2} calories\nOverall they are carrying {3} calories".format(all_sums[0], all_sums[1], all_sums[2], sum(all_sums[:3])))
