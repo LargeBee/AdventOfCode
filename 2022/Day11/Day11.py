@@ -8,17 +8,19 @@ part_b = 0
 class Monkey:
     def __init__(self, id, items, op_operator, op_val, test, true_id, false_id):
         self.id = id
-        self.items = items
+        self.a_items = [x for x in items]
+        self.b_items = [x for x in items]
         self.op_operator = op_operator
         self.op_val = op_val
         self.test = test
         self.true_id = true_id
         self.false_id = false_id
-        self.inspections = 0
+        self.a_inspections = 0
+        self.b_inspections = 0
     
     def __str__(self):
-        return "Monkey {}\nItems: {}\nNew = Old {} {}\nDivisible by {}\n   if true throw to {}\n   if false throw to {}".format(
-            self.id, self.items, self.op_operator, self.op_val, self.test, self.true_id, self.false_id)
+        return "Monkey {}\nItems A&B:\n{}\n{}\nNew = Old {} {}\nDivisible by {}\n   if true throw to {}\n   if false throw to {}".format(
+            self.id, self.a_items, self.b_items, self.op_operator, self.op_val, self.test, self.true_id, self.false_id)
 
 line_count = 0
 id = 0
@@ -52,19 +54,17 @@ for line in all_lines:
             monkeys.append(Monkey(id, items, operator, value, test, true_id, false_id))
     line_count += 1
 
-
-total_rounds = 20
-for i in range(total_rounds):
+for i in range(20):
     for monkey in monkeys:
-        if not monkey.items:
+        if not monkey.a_items:
             continue
-        for item in list(monkey.items):
+        for item in list(monkey.a_items):
             start_val = item
             if monkey.op_val == 'old':
                 val = item
             else:
                 val = int(monkey.op_val)
-            monkey.inspections += 1
+            monkey.a_inspections += 1
             match monkey.op_operator:
                 case "+":
                     item += val
@@ -78,22 +78,56 @@ for i in range(total_rounds):
                 thrown_id = int(monkey.false_id)
             for next_monkey in monkeys:
                 if next_monkey.id == thrown_id:
-                    next_monkey.items.append(item)
+                    next_monkey.a_items.append(item)
                     break
-            monkey.items.remove(start_val)
-    if i == 19:
-        inspections = []
-        print("After 20 rounds")
-        for monkey in monkeys:
-            print("Monkey {} inspected items {} times.".format(monkey.id, monkey.inspections))
-            inspections.append(monkey.inspections)
-        inspections = sorted(inspections)
-        part_a = inspections[-1] * inspections[-2]
-
-print("After {} rounds".format(total_rounds))
+            monkey.a_items.remove(start_val)   
+inspections = []
+print("After 20 rounds, inspections with x/3 worry value")
 for monkey in monkeys:
-    print("Monkey {} inspected items {} times.".format(monkey.id, monkey.inspections))
-    inspections.append(monkey.inspections)
+    print("Monkey {} inspected items {} times.".format(monkey.id, monkey.a_inspections))
+    inspections.append(monkey.a_inspections)
+inspections = sorted(inspections)
+part_a = inspections[-1] * inspections[-2]
+
+lcm = 1
+for monkey in monkeys:
+    lcm = lcm * monkey.test
+total_rounds = 10000
+for i in range(total_rounds):
+    for monkey in monkeys:
+        if not monkey.b_items:
+            continue
+        for item in list(monkey.b_items):
+            start_val = item
+            if monkey.op_val == 'old':
+                val = item
+            else:
+                val = int(monkey.op_val)
+            monkey.b_inspections += 1
+            match monkey.op_operator:
+                case "+":
+                    item += val
+                case "*":
+                    item *= val
+            thrown_id = 0
+            item %= lcm
+            if item % monkey.test == 0:
+                thrown_id = int(monkey.true_id)
+            else:
+                thrown_id = int(monkey.false_id)
+            for next_monkey in monkeys:
+                if next_monkey.id == thrown_id:
+                    next_monkey.b_items.append(item)
+                    break
+            monkey.b_items.remove(start_val)
+
+inspections = []
+print("After {} rounds, inspections without x/3 worry value".format(total_rounds))
+for monkey in monkeys:
+    print("Monkey {} inspected items {} times.".format(monkey.id, monkey.b_inspections))
+    inspections.append(monkey.b_inspections)
+inspections = sorted(inspections)
+part_b = inspections[-1] * inspections[-2]
        
 print("Part A: {}".format(part_a))
 print("Part B: {}".format(part_b))
