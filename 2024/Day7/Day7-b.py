@@ -9,6 +9,8 @@ def valid(num, rest):
         return True
     if valid(num,[rest[0]*rest[1]]+rest[2:]):
         return True
+    if valid(num,[int(str(rest[0])+str(rest[1]))]+rest[2:]):
+        return True
     return False
 
 final_sum = 0
